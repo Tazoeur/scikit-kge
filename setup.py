@@ -13,6 +13,7 @@ DESCRIPTION = descr
 # right place.
 try:
     import pypandoc
+
     LONG_DESCRIPTION = pypandoc.convert('README.md', 'rst')
 except (IOError, ImportError):
     LONG_DESCRIPTION = ''
@@ -33,19 +34,13 @@ CLASSIFIERS = [
     'Operating System :: POSIX',
     'Operating System :: Unix',
     'Operating System :: MacOS',
-    'Programming Language :: Python :: 2',
-    'Programming Language :: Python :: 2.6',
-    'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3',
     'Programming Language :: Python :: 3.3'
 ]
+VERSION = '0.9.2'
 
 try:
     import setuptools  # If you want to enable 'python setup.py develop'
-    EXTRA_INFO.update(dict(
-        zip_safe=False,   # the package can run out of an .egg file
-        include_package_data=True
-    ))
 except:
     print('setuptools module not found.')
     print("Install setuptools if you want to enable 'python setup.py develop'.")
@@ -72,19 +67,15 @@ def configuration(parent_package='', top_path=None, package_name=DISTNAME):
     return config
 
 
-def get_version():
-    """Obtain the version number"""
-    import imp
-    mod = imp.load_source('version', os.path.join(PACKAGE_NAME, 'version.py'))
-    return mod.__version__
-
 # Documentation building command
 try:
     import subprocess
     from sphinx.setup_command import BuildDoc as SphinxBuildDoc
 
+
     class BuildDoc(SphinxBuildDoc):
         """Run in-place build before Sphinx doc build"""
+
         def run(self):
             ret = subprocess.call(
                 [sys.executable, sys.argv[0], 'build_ext', '-i']
@@ -92,13 +83,15 @@ try:
             if ret != 0:
                 raise RuntimeError("Building Scipy failed!")
             SphinxBuildDoc.run(self)
+
+
     cmdclass = {'build_sphinx': BuildDoc}
 except ImportError:
     cmdclass = {}
 
 
 def setup_package():
-# Call the setup function
+    # Call the setup function
     metadata = dict(
         name=DISTNAME,
         maintainer=MAINTAINER,
@@ -108,7 +101,7 @@ def setup_package():
         url=URL,
         download_url=DOWNLOAD_URL,
         long_description=LONG_DESCRIPTION,
-        version=get_version(),
+        version=VERSION,
         cmdclass=cmdclass,
         classifiers=CLASSIFIERS
     )
@@ -127,11 +120,12 @@ def setup_package():
         except ImportError:
             from distutils.core import setup
 
-        metadata['version'] = get_version()
+        metadata['version'] = VERSION
     else:
         metadata['configuration'] = configuration
         from numpy.distutils.core import setup
     setup(**metadata)
+
 
 if __name__ == "__main__":
     setup_package()
